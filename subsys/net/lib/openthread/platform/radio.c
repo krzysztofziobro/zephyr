@@ -31,6 +31,7 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_OPENTHREAD_L2_LOG_LEVEL);
 #include <openthread-system.h>
 #include <openthread/instance.h>
 #include <openthread/platform/radio.h>
+#include <openthread/platform/time.h>
 #include <openthread/platform/diag.h>
 #include <openthread/message.h>
 
@@ -94,6 +95,10 @@ K_KERNEL_STACK_DEFINE(ot_task_stack,
 static struct k_work_q ot_work_q;
 static otError rx_result;
 static otError tx_result;
+
+#if defined(CONFIG_IEEE802154_2015)
+static otRadioIeInfo sTransmitIeInfo;
+#endif
 
 K_FIFO_DEFINE(rx_pkt_fifo);
 K_FIFO_DEFINE(tx_pkt_fifo);
@@ -220,6 +225,9 @@ static void dataInit(void)
 	net_pkt_append_buffer(tx_pkt, tx_payload);
 
 	sTransmitFrame.mPsdu = tx_payload->data;
+#if defined(CONFIG_IEEE802154_2015)
+        sTransmitFrame.mInfo.mTxInfo.mIeInfo = &sTransmitIeInfo;
+#endif
 }
 
 void platformRadioInit(void)
@@ -1074,6 +1082,7 @@ otError otPlatRadioEnableCsl(otInstance *aInstance, uint32_t aCslPeriod, otShort
 	/* Leave CSL Phase empty intentionally */
 	sys_put_le16(aCslPeriod, &ie_header[OT_IE_HEADER_SIZE + 2]);
 	config.ack_ie.data = ie_header;
+	config.ack_ie.data_len = OT_IE_HEADER_SIZE + OT_CSL_IE_SIZE;
 	config.ack_ie.short_addr = aShortAddr;
 	config.ack_ie.ext_addr = aExtAddr->m8;
 
@@ -1223,3 +1232,9 @@ otError otPlatRadioConfigureEnhAckProbing(otInstance *aInstance, otLinkMetrics a
 }
 
 #endif /* CONFIG_OPENTHREAD_LINK_METRICS_SUBJECT */
+
+uint64_t otPlatTimeGet()
+{
+       return k_uptime_get()*1000;
+}
+
