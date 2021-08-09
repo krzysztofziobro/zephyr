@@ -226,7 +226,7 @@ static void dataInit(void)
 
 	sTransmitFrame.mPsdu = tx_payload->data;
 #if defined(CONFIG_IEEE802154_2015)
-        sTransmitFrame.mInfo.mTxInfo.mIeInfo = &sTransmitIeInfo;
+	sTransmitFrame.mInfo.mTxInfo.mIeInfo = &sTransmitIeInfo;
 #endif
 }
 
@@ -698,6 +698,7 @@ int8_t otPlatRadioGetRssi(otInstance *aInstance)
 	int error = 0;
 	const uint16_t energy_detection_time = 1;
 	enum ieee802154_hw_caps radio_caps;
+
 	ARG_UNUSED(aInstance);
 
 	radio_caps = radio_api->get_capabilities(radio_dev);
@@ -731,6 +732,7 @@ otRadioCaps otPlatRadioGetCaps(otInstance *aInstance)
 	otRadioCaps caps = OT_RADIO_CAPS_NONE;
 
 	enum ieee802154_hw_caps radio_caps;
+
 	ARG_UNUSED(aInstance);
 	__ASSERT(radio_api,
 	    "platformRadioInit needs to be called prior to otPlatRadioGetCaps");
