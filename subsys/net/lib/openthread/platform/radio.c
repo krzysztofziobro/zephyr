@@ -96,7 +96,7 @@ static struct k_work_q ot_work_q;
 static otError rx_result;
 static otError tx_result;
 
-#if defined(CONFIG_IEEE802154_2015)
+#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
 static otRadioIeInfo sTransmitIeInfo;
 #endif
 
@@ -225,7 +225,7 @@ static void dataInit(void)
 	net_pkt_append_buffer(tx_pkt, tx_payload);
 
 	sTransmitFrame.mPsdu = tx_payload->data;
-#if defined(CONFIG_IEEE802154_2015)
+#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
 	sTransmitFrame.mInfo.mTxInfo.mIeInfo = &sTransmitIeInfo;
 #endif
 }
