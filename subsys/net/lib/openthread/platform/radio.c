@@ -1235,6 +1235,10 @@ otError otPlatRadioConfigureEnhAckProbing(otInstance *aInstance, otLinkMetrics a
 
 uint64_t otPlatTimeGet()
 {
-       return k_ticks_to_us_floor64(k_uptime_ticks());
+	return k_ticks_to_us_floor64(k_uptime_ticks());
 }
 
+uint16_t otPlatTimeGetXtalAccuracy()
+{
+	return CONFIG_CLOCK_CONTROL_NRF_ACCURACY;
+}
