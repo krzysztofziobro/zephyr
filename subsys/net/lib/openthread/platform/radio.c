@@ -97,7 +97,7 @@ static otError rx_result;
 static otError tx_result;
 
 #if defined(CONFIG_OPENTHREAD_TIME_SYNC)
-static otRadioIeInfo sTransmitIeInfo;
+static otRadioIeInfo tx_ie_info;
 #endif
 
 K_FIFO_DEFINE(rx_pkt_fifo);
@@ -226,7 +226,7 @@ static void dataInit(void)
 
 	sTransmitFrame.mPsdu = tx_payload->data;
 #if defined(CONFIG_OPENTHREAD_TIME_SYNC)
-	sTransmitFrame.mInfo.mTxInfo.mIeInfo = &sTransmitIeInfo;
+	sTransmitFrame.mInfo.mTxInfo.mIeInfo = &tx_ie_info;
 #endif
 }
 
@@ -1234,11 +1234,6 @@ otError otPlatRadioConfigureEnhAckProbing(otInstance *aInstance, otLinkMetrics a
 }
 
 #endif /* CONFIG_OPENTHREAD_LINK_METRICS_SUBJECT */
-
-uint64_t otPlatTimeGet()
-{
-	return k_ticks_to_us_floor64(k_uptime_ticks());
-}
 
 uint16_t otPlatTimeGetXtalAccuracy()
 {
