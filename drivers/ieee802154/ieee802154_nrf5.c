@@ -501,8 +501,8 @@ static int nrf5_tx(const struct device *dev,
 	memcpy(nrf5_radio->tx_psdu + 1, payload, payload_len);
 
 #if defined(CONFIG_OPENTHREAD_TIME_SYNC)
-        nrf5_radio->tx_psdu_time_ie_offset = pkt->ieee802154_time_ie_offset;
-        nrf5_radio->tx_network_time_offset = pkt->ieee802154_network_time_offset;
+	nrf5_radio->tx_psdu_time_ie_offset = net_pkt_ieee802154_time_ie_offset(pkt);
+	nrf5_radio->tx_network_time_offset = net_pkt_ieee802154_network_time_offset(pkt);
 #endif
 
 	/* Reset semaphore in case ACK was received after timeout */
@@ -667,6 +667,10 @@ void nrf_802154_tx_started(const uint8_t *aFrame)
        if (nrf5_data.tx_psdu_time_ie_offset != 0) {
                uint8_t *timeIe = nrf5_data.tx_psdu + NRF5_PHR_LENGTH + nrf5_data.tx_psdu_time_ie_offset;
                uint64_t time = (uint64_t)((int64_t)nrf5_get_time(NULL) + nrf5_data.tx_network_time_offset);
+
+	       /* First byte of Time IE is skipped here because it corresponds
+		* to a sequence number and has already been set.
+		*/
 
                *(++timeIe) = (uint8_t)(time & 0xff);
                for (uint8_t i = 1; i < sizeof(uint64_t); i++) {
