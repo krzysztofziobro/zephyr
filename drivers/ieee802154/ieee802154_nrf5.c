@@ -665,7 +665,7 @@ void nrf_802154_tx_started(const uint8_t *aFrame)
        assert(aFrame == nrf5_data.tx_psdu);
 
        if (nrf5_data.tx_psdu_time_ie_offset != 0) {
-               uint8_t *timeIe = (nrf5_data.tx_psdu + 1) + nrf5_data.tx_psdu_time_ie_offset;
+               uint8_t *timeIe = nrf5_data.tx_psdu + NRF5_PHR_LENGTH + nrf5_data.tx_psdu_time_ie_offset;
                uint64_t time = (uint64_t)((int64_t)nrf5_get_time(NULL) + nrf5_data.tx_network_time_offset);
 
                *(++timeIe) = (uint8_t)(time & 0xff);
