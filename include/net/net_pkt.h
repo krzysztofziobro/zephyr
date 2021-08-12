@@ -268,6 +268,11 @@ struct net_pkt {
 		struct canbus_isotp_rx_ctx *canbus_rx_ctx;
 	};
 #endif
+
+#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
+    uint8_t ieee802154_time_ie_offset;
+    int64_t ieee802154_network_time_offset;
+#endif
 	/* @endcond */
 };
 

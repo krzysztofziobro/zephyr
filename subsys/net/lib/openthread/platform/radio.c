@@ -280,6 +280,14 @@ void transmit_message(struct k_work *tx_job)
 	radio_api->set_channel(radio_dev, sTransmitFrame.mChannel);
 	radio_api->set_txpower(radio_dev, tx_power);
 
+#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
+       tx_pkt->ieee802154_time_ie_offset = sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeIeOffset;
+       if (sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeIeOffset != 0) {
+               *(sTransmitFrame.mPsdu + sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeIeOffset) = sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeSyncSeq;
+               tx_pkt->ieee802154_network_time_offset = sTransmitFrame.mInfo.mTxInfo.mIeInfo->mNetworkTimeOffset;
+       }
+#endif
+
 	net_pkt_set_ieee802154_frame_secured(tx_pkt,
 					     sTransmitFrame.mInfo.mTxInfo.mIsSecurityProcessed);
 	net_pkt_set_ieee802154_mac_hdr_rdy(tx_pkt, sTransmitFrame.mInfo.mTxInfo.mIsHeaderUpdated);
