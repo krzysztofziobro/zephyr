@@ -270,8 +270,8 @@ struct net_pkt {
 #endif
 
 #if defined(CONFIG_OPENTHREAD_TIME_SYNC)
-    uint8_t ieee802154_time_ie_offset;	/* Time Sync IE offset */
-    int64_t ieee802154_network_time_offset; /* Offset between local and network time for OT Time Sync */
+	uint8_t ieee802154_time_ie_offset;      /* Time Sync IE offset */
+	int64_t ieee802154_network_time_offset; /* Offset between local and network time for OT Time Sync */
 #endif
 	/* @endcond */
 };
