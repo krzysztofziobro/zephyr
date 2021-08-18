@@ -101,7 +101,7 @@ struct net_pkt {
 		uint32_t create_time;
 
 #if defined(CONFIG_NET_PKT_TXTIME_STATS_DETAIL) || \
-		defined(CONFIG_NET_PKT_RXTIME_STATS_DETAIL)
+	defined(CONFIG_NET_PKT_RXTIME_STATS_DETAIL)
 		/** Collect extra statistics for net_pkt processing
 		 * from various points in the IP stack. See networking
 		 * documentation where these points are located and how
@@ -111,10 +111,10 @@ struct net_pkt {
 			uint32_t stat[NET_PKT_DETAIL_STATS_COUNT];
 			int count;
 		} detail;
-#endif  /* CONFIG_NET_PKT_TXTIME_STATS_DETAIL ||
-		CONFIG_NET_PKT_RXTIME_STATS_DETAIL */
+#endif /* CONFIG_NET_PKT_TXTIME_STATS_DETAIL ||
+	  CONFIG_NET_PKT_RXTIME_STATS_DETAIL */
 	};
-#endif  /* CONFIG_NET_PKT_RXTIME_STATS || CONFIG_NET_PKT_TXTIME_STATS */
+#endif /* CONFIG_NET_PKT_RXTIME_STATS || CONFIG_NET_PKT_TXTIME_STATS */
 
 #if defined(CONFIG_NET_PKT_TXTIME)
 	/** Network packet TX time in the future (in nanoseconds) */
@@ -133,64 +133,64 @@ struct net_pkt {
 	sys_snode_t next;
 #endif
 
-	uint8_t ip_hdr_len;             /* pre-filled in order to avoid func call */
+	uint8_t ip_hdr_len;	/* pre-filled in order to avoid func call */
 
-	uint8_t overwrite  : 1;         /* Is packet content being overwritten? */
+	uint8_t overwrite  : 1;	/* Is packet content being overwritten? */
 
-	uint8_t sent_or_eof : 1;        /* For outgoing packet: is this sent or not
-	                                 * For incoming packet of a socket: last
-	                                 * packet before EOF
-	                                 * Used only if defined(CONFIG_NET_TCP)
-	                                 */
+	uint8_t sent_or_eof: 1;	/* For outgoing packet: is this sent or not
+				 * For incoming packet of a socket: last
+				 * packet before EOF
+				 * Used only if defined(CONFIG_NET_TCP)
+				 */
 	union {
-		uint8_t pkt_queued : 1; /* For outgoing packet: is this packet
-		                         * queued to be sent but has not reached
-		                         * the driver yet.
-		                         * Used only if defined(CONFIG_NET_TCP)
-		                         */
-		uint8_t gptp_pkt : 1;   /* For outgoing packet: is this packet
-		                         * a GPTP packet.
-		                         * Used only if defined (CONFIG_NET_GPTP)
-		                         */
+		uint8_t pkt_queued: 1; /* For outgoing packet: is this packet
+				     * queued to be sent but has not reached
+				     * the driver yet.
+				     * Used only if defined(CONFIG_NET_TCP)
+				     */
+		uint8_t gptp_pkt: 1; /* For outgoing packet: is this packet
+				   * a GPTP packet.
+				   * Used only if defined (CONFIG_NET_GPTP)
+				   */
 	};
 
-	uint8_t forwarding : 1; /* Are we forwarding this pkt
-	                         * Used only if defined(CONFIG_NET_ROUTE)
-	                         */
-	uint8_t family     : 3; /* IPv4 vs IPv6 */
+	uint8_t forwarding : 1;	/* Are we forwarding this pkt
+				 * Used only if defined(CONFIG_NET_ROUTE)
+				 */
+	uint8_t family     : 3;	/* IPv4 vs IPv6 */
 
 	union {
-		uint8_t ipv4_auto_arp_msg : 1;  /* Is this pkt IPv4 autoconf ARP
-		                                 * message. Used only if
-		                                 * defined(CONFIG_NET_IPV4_AUTO).
-		                                 * Note: family needs to be
-		                                 * AF_INET.
-		                                 */
-		uint8_t lldp_pkt          : 1;  /* Is this pkt an LLDP message.
-		                                 * Used only if
-		                                 * defined(CONFIG_NET_LLDP).
-		                                 * Note: family needs to be
-		                                 * AF_UNSPEC.
-		                                 */
-		uint8_t ppp_msg           : 1;  /* This is a PPP message */
+		uint8_t ipv4_auto_arp_msg : 1; /* Is this pkt IPv4 autoconf ARP
+					     * message. Used only if
+					     * defined(CONFIG_NET_IPV4_AUTO).
+					     * Note: family needs to be
+					     * AF_INET.
+					     */
+		uint8_t lldp_pkt          : 1; /* Is this pkt an LLDP message.
+					     * Used only if
+					     * defined(CONFIG_NET_LLDP).
+					     * Note: family needs to be
+					     * AF_UNSPEC.
+					     */
+		uint8_t ppp_msg           : 1; /* This is a PPP message */
 	};
 
 #if defined(CONFIG_NET_TCP)
 	uint8_t tcp_first_msg     : 1; /* Is this the first time this pkt is
-	                                * sent, or is this a resend of a TCP
-	                                * segment.
-	                                */
+					* sent, or is this a resend of a TCP
+					* segment.
+					*/
 #endif
 
-	uint8_t captured : 1;   /* Set to 1 if this packet is already being
-	                         * captured
-	                         */
+	uint8_t captured : 1; /* Set to 1 if this packet is already being
+			       * captured
+			       */
 
 	uint8_t l2_bridged : 1; /* set to 1 if this packet comes from a bridge
-	                         * and already contains its L2 header to be
-	                         * preserved. Useful only if
-	                         * defined(CONFIG_NET_ETHERNET_BRIDGE).
-	                         */
+				 * and already contains its L2 header to be
+				 * preserved. Useful only if
+				 * defined(CONFIG_NET_ETHERNET_BRIDGE).
+				 */
 
 	union {
 		/* IPv6 hop limit or IPv4 ttl for this network packet.
@@ -232,34 +232,34 @@ struct net_pkt {
 	uint16_t ipv6_prev_hdr_start;
 
 #if defined(CONFIG_NET_IPV6_FRAGMENT)
-	uint16_t ipv6_fragment_offset;  /* Fragment offset of this packet */
-	uint32_t ipv6_fragment_id;      /* Fragment id */
-	uint16_t ipv6_frag_hdr_start;   /* Where starts the fragment header */
+	uint16_t ipv6_fragment_offset;	/* Fragment offset of this packet */
+	uint32_t ipv6_fragment_id;	/* Fragment id */
+	uint16_t ipv6_frag_hdr_start;	/* Where starts the fragment header */
 #endif /* CONFIG_NET_IPV6_FRAGMENT */
 
-	uint8_t ipv6_ext_opt_len;       /* IPv6 ND option length */
-	uint8_t ipv6_next_hdr;          /* What is the very first next header */
+	uint8_t ipv6_ext_opt_len; /* IPv6 ND option length */
+	uint8_t ipv6_next_hdr;	/* What is the very first next header */
 #endif /* CONFIG_NET_IPV6 */
 
 #if defined(CONFIG_IEEE802154)
-	uint8_t ieee802154_rssi;                /* Received Signal Strength Indication */
-	uint8_t ieee802154_lqi;                 /* Link Quality Indicator */
-	uint8_t ieee802154_arb : 1;             /* ACK Request Bit is set in the frame */
-	uint8_t ieee802154_ack_fpb : 1;         /* Frame Pending Bit was set in the ACK */
-	uint8_t ieee802154_frame_secured : 1;   /* Frame is authenticated and
-	                                         * encrypted according to its
-	                                         * Auxiliary Security Header
-	                                         */
-	uint8_t ieee802154_mac_hdr_rdy : 1;     /* Indicates if frame's MAC header
-	                                         * is ready to be transmitted or if
-	                                         * it requires further modifications,
-	                                         * e.g. Frame Counter injection.
-	                                         */
+	uint8_t ieee802154_rssi; /* Received Signal Strength Indication */
+	uint8_t ieee802154_lqi;  /* Link Quality Indicator */
+	uint8_t ieee802154_arb : 1; /* ACK Request Bit is set in the frame */
+	uint8_t ieee802154_ack_fpb : 1; /* Frame Pending Bit was set in the ACK */
+	uint8_t ieee802154_frame_secured : 1; /* Frame is authenticated and
+					       * encrypted according to its
+					       * Auxiliary Security Header
+					       */
+	uint8_t ieee802154_mac_hdr_rdy : 1; /* Indicates if frame's MAC header
+					     * is ready to be transmitted or if
+					     * it requires further modifications,
+					     * e.g. Frame Counter injection.
+					     */
 #if defined(CONFIG_IEEE802154_2015)
-	uint8_t ieee802154_fv2015 : 1;          /* Frame version is IEEE 802.15.4-2015 */
-	uint8_t ieee802154_ack_seb : 1;         /* Security Enabled Bit was set in the ACK */
-	uint32_t ieee802154_ack_fc;             /* Frame counter set in the ACK */
-	uint8_t ieee802154_ack_keyid;           /* Key index set in the ACK */
+	uint8_t ieee802154_fv2015 : 1; /* Frame version is IEEE 802.15.4-2015 */
+	uint8_t ieee802154_ack_seb : 1; /* Security Enabled Bit was set in the ACK */
+	uint32_t ieee802154_ack_fc; /* Frame counter set in the ACK */
+	uint8_t ieee802154_ack_keyid; /* Key index set in the ACK */
 #endif
 #endif
 #if defined(CONFIG_NET_L2_CANBUS)
@@ -270,8 +270,8 @@ struct net_pkt {
 #endif
 
 #if defined(CONFIG_OPENTHREAD_TIME_SYNC)
-	uint8_t ieee802154_time_ie_offset;      /* Time Sync IE offset */
-	int64_t ieee802154_network_time_offset; /* Offset between local and network time for OT Time Sync */
+    uint8_t ieee802154_time_ie_offset;	/* Time Sync IE offset */
+    int64_t ieee802154_network_time_offset; /* Offset between local and network time for OT Time Sync */
 #endif
 	/* @endcond */
 };
@@ -950,7 +950,7 @@ static inline void net_pkt_set_stats_tick(struct net_pkt *pkt, uint32_t tick)
 #define net_pkt_set_tx_stats_tick(pkt, tick)
 #define net_pkt_set_rx_stats_tick(pkt, tick)
 #endif /* CONFIG_NET_PKT_TXTIME_STATS_DETAIL ||
-          CONFIG_NET_PKT_RXTIME_STATS_DETAIL */
+	  CONFIG_NET_PKT_RXTIME_STATS_DETAIL */
 
 static inline size_t net_pkt_get_len(struct net_pkt *pkt)
 {
@@ -1104,8 +1104,8 @@ static inline void net_pkt_set_ieee802154_ack_keyid(struct net_pkt *pkt,
 {
 	pkt->ieee802154_ack_keyid = keyid;
 }
-#endif  /* CONFIG_IEEE802154_2015 */
-#endif  /* CONFIG_IEEE802154 || CONFIG_IEEE802154_RAW_MODE */
+#endif /* CONFIG_IEEE802154_2015 */
+#endif /* CONFIG_IEEE802154 || CONFIG_IEEE802154_RAW_MODE */
 
 #if defined(CONFIG_OPENTHREAD_TIME_SYNC)
 static inline uint8_t net_pkt_ieee802154_time_ie_offset(struct net_pkt *pkt)
@@ -1233,7 +1233,7 @@ static inline bool net_pkt_is_being_overwritten(struct net_pkt *pkt)
  * @param name Name of the slab.
  * @param count Number of net_pkt in this slab.
  */
-#define NET_PKT_SLAB_DEFINE(name, count) \
+#define NET_PKT_SLAB_DEFINE(name, count)				\
 	K_MEM_SLAB_DEFINE(name, sizeof(struct net_pkt), count, 4)
 
 /* Backward compatibility macro */
@@ -1252,8 +1252,8 @@ static inline bool net_pkt_is_being_overwritten(struct net_pkt *pkt)
  * @param name Name of the pool.
  * @param count Number of net_buf in this pool.
  */
-#define NET_PKT_DATA_POOL_DEFINE(name, count)			   \
-	NET_BUF_POOL_DEFINE(name, count, CONFIG_NET_BUF_DATA_SIZE, \
+#define NET_PKT_DATA_POOL_DEFINE(name, count)				\
+	NET_BUF_POOL_DEFINE(name, count, CONFIG_NET_BUF_DATA_SIZE,	\
 			    CONFIG_NET_BUF_USER_DATA_SIZE, NULL)
 
 /** @cond INTERNAL_HIDDEN */
@@ -1274,25 +1274,25 @@ struct net_buf *net_pkt_get_reserve_data_debug(struct net_buf_pool *pool,
 					       const char *caller,
 					       int line);
 
-#define net_pkt_get_reserve_data(pool, timeout)	\
+#define net_pkt_get_reserve_data(pool, timeout)				\
 	net_pkt_get_reserve_data_debug(pool, timeout, __func__, __LINE__)
 
 struct net_buf *net_pkt_get_reserve_rx_data_debug(k_timeout_t timeout,
 						  const char *caller,
 						  int line);
-#define net_pkt_get_reserve_rx_data(timeout) \
+#define net_pkt_get_reserve_rx_data(timeout)				\
 	net_pkt_get_reserve_rx_data_debug(timeout, __func__, __LINE__)
 
 struct net_buf *net_pkt_get_reserve_tx_data_debug(k_timeout_t timeout,
 						  const char *caller,
 						  int line);
-#define net_pkt_get_reserve_tx_data(timeout) \
+#define net_pkt_get_reserve_tx_data(timeout)				\
 	net_pkt_get_reserve_tx_data_debug(timeout, __func__, __LINE__)
 
 struct net_buf *net_pkt_get_frag_debug(struct net_pkt *pkt,
 				       k_timeout_t timeout,
 				       const char *caller, int line);
-#define net_pkt_get_frag(pkt, timeout) \
+#define net_pkt_get_frag(pkt, timeout)					\
 	net_pkt_get_frag_debug(pkt, timeout, __func__, __LINE__)
 
 void net_pkt_unref_debug(struct net_pkt *pkt, const char *caller, int line);
@@ -1308,28 +1308,28 @@ struct net_buf *net_pkt_frag_ref_debug(struct net_buf *frag,
 
 void net_pkt_frag_unref_debug(struct net_buf *frag,
 			      const char *caller, int line);
-#define net_pkt_frag_unref(frag) \
+#define net_pkt_frag_unref(frag)				\
 	net_pkt_frag_unref_debug(frag, __func__, __LINE__)
 
 struct net_buf *net_pkt_frag_del_debug(struct net_pkt *pkt,
 				       struct net_buf *parent,
 				       struct net_buf *frag,
 				       const char *caller, int line);
-#define net_pkt_frag_del(pkt, parent, frag) \
+#define net_pkt_frag_del(pkt, parent, frag)				\
 	net_pkt_frag_del_debug(pkt, parent, frag, __func__, __LINE__)
 
 void net_pkt_frag_add_debug(struct net_pkt *pkt, struct net_buf *frag,
 			    const char *caller, int line);
-#define net_pkt_frag_add(pkt, frag) \
+#define net_pkt_frag_add(pkt, frag)				\
 	net_pkt_frag_add_debug(pkt, frag, __func__, __LINE__)
 
 void net_pkt_frag_insert_debug(struct net_pkt *pkt, struct net_buf *frag,
 			       const char *caller, int line);
-#define net_pkt_frag_insert(pkt, frag) \
+#define net_pkt_frag_insert(pkt, frag)					\
 	net_pkt_frag_insert_debug(pkt, frag, __func__, __LINE__)
 #endif /* CONFIG_NET_DEBUG_NET_PKT_ALLOC ||
-        * CONFIG_NET_PKT_LOG_LEVEL >= LOG_LEVEL_DBG
-        */
+	* CONFIG_NET_PKT_LOG_LEVEL >= LOG_LEVEL_DBG
+	*/
 /** @endcond */
 
 /**
@@ -1534,33 +1534,33 @@ const char *net_pkt_pool2str(struct net_buf_pool *pool);
 
 struct net_pkt *net_pkt_alloc_debug(k_timeout_t timeout,
 				    const char *caller, int line);
-#define net_pkt_alloc(_timeout)	\
+#define net_pkt_alloc(_timeout)					\
 	net_pkt_alloc_debug(_timeout, __func__, __LINE__)
 
 struct net_pkt *net_pkt_alloc_from_slab_debug(struct k_mem_slab *slab,
 					      k_timeout_t timeout,
 					      const char *caller, int line);
-#define net_pkt_alloc_from_slab(_slab, _timeout) \
+#define net_pkt_alloc_from_slab(_slab, _timeout)			\
 	net_pkt_alloc_from_slab_debug(_slab, _timeout, __func__, __LINE__)
 
 struct net_pkt *net_pkt_rx_alloc_debug(k_timeout_t timeout,
 				       const char *caller, int line);
-#define net_pkt_rx_alloc(_timeout) \
+#define net_pkt_rx_alloc(_timeout)				\
 	net_pkt_rx_alloc_debug(_timeout, __func__, __LINE__)
 
 struct net_pkt *net_pkt_alloc_on_iface_debug(struct net_if *iface,
 					     k_timeout_t timeout,
 					     const char *caller,
 					     int line);
-#define net_pkt_alloc_on_iface(_iface, _timeout) \
+#define net_pkt_alloc_on_iface(_iface, _timeout)			\
 	net_pkt_alloc_on_iface_debug(_iface, _timeout, __func__, __LINE__)
 
 struct net_pkt *net_pkt_rx_alloc_on_iface_debug(struct net_if *iface,
 						k_timeout_t timeout,
 						const char *caller,
 						int line);
-#define net_pkt_rx_alloc_on_iface(_iface, _timeout)	  \
-	net_pkt_rx_alloc_on_iface_debug(_iface, _timeout, \
+#define net_pkt_rx_alloc_on_iface(_iface, _timeout)			\
+	net_pkt_rx_alloc_on_iface_debug(_iface, _timeout,		\
 					__func__, __LINE__)
 
 int net_pkt_alloc_buffer_debug(struct net_pkt *pkt,
@@ -1568,8 +1568,8 @@ int net_pkt_alloc_buffer_debug(struct net_pkt *pkt,
 			       enum net_ip_protocol proto,
 			       k_timeout_t timeout,
 			       const char *caller, int line);
-#define net_pkt_alloc_buffer(_pkt, _size, _proto, _timeout)	  \
-	net_pkt_alloc_buffer_debug(_pkt, _size, _proto, _timeout, \
+#define net_pkt_alloc_buffer(_pkt, _size, _proto, _timeout)		\
+	net_pkt_alloc_buffer_debug(_pkt, _size, _proto, _timeout,	\
 				   __func__, __LINE__)
 
 struct net_pkt *net_pkt_alloc_with_buffer_debug(struct net_if *iface,
@@ -1579,10 +1579,10 @@ struct net_pkt *net_pkt_alloc_with_buffer_debug(struct net_if *iface,
 						k_timeout_t timeout,
 						const char *caller,
 						int line);
-#define net_pkt_alloc_with_buffer(_iface, _size, _family,	\
-				  _proto, _timeout)		\
-	net_pkt_alloc_with_buffer_debug(_iface, _size, _family,	\
-					_proto, _timeout,	\
+#define net_pkt_alloc_with_buffer(_iface, _size, _family,		\
+				  _proto, _timeout)			\
+	net_pkt_alloc_with_buffer_debug(_iface, _size, _family,		\
+					_proto, _timeout,		\
 					__func__, __LINE__)
 
 struct net_pkt *net_pkt_rx_alloc_with_buffer_debug(struct net_if *iface,
@@ -1592,10 +1592,10 @@ struct net_pkt *net_pkt_rx_alloc_with_buffer_debug(struct net_if *iface,
 						   k_timeout_t timeout,
 						   const char *caller,
 						   int line);
-#define net_pkt_rx_alloc_with_buffer(_iface, _size, _family,	   \
-				     _proto, _timeout)		   \
-	net_pkt_rx_alloc_with_buffer_debug(_iface, _size, _family, \
-					   _proto, _timeout,	   \
+#define net_pkt_rx_alloc_with_buffer(_iface, _size, _family,		\
+				     _proto, _timeout)			\
+	net_pkt_rx_alloc_with_buffer_debug(_iface, _size, _family,	\
+					   _proto, _timeout,		\
 					   __func__, __LINE__)
 #endif /* NET_PKT_DEBUG_ENABLED */
 /** @endcond */
@@ -2093,26 +2093,26 @@ struct net_pkt_data_access {
 };
 
 #if defined(CONFIG_NET_HEADERS_ALWAYS_CONTIGUOUS)
-#define NET_PKT_DATA_ACCESS_DEFINE(_name, _type) \
-	struct net_pkt_data_access _name = {	 \
-		.size = sizeof(_type),		 \
+#define NET_PKT_DATA_ACCESS_DEFINE(_name, _type)		\
+	struct net_pkt_data_access _name = {			\
+		.size = sizeof(_type),				\
 	}
 
-#define NET_PKT_DATA_ACCESS_CONTIGUOUS_DEFINE(_name, _type) \
+#define NET_PKT_DATA_ACCESS_CONTIGUOUS_DEFINE(_name, _type)	\
 	NET_PKT_DATA_ACCESS_DEFINE(_name, _type)
 
 #else
-#define NET_PKT_DATA_ACCESS_DEFINE(_name, _type) \
-	_type _hdr_##_name;			 \
-	struct net_pkt_data_access _name = {	 \
-		.data = &_hdr_##_name,		 \
-		.size = sizeof(_type),		 \
+#define NET_PKT_DATA_ACCESS_DEFINE(_name, _type)		\
+	_type _hdr_##_name;					\
+	struct net_pkt_data_access _name = {			\
+		.data = &_hdr_##_name,				\
+		.size = sizeof(_type),				\
 	}
 
-#define NET_PKT_DATA_ACCESS_CONTIGUOUS_DEFINE(_name, _type) \
-	struct net_pkt_data_access _name = {		    \
-		.data = NULL,				    \
-		.size = sizeof(_type),			    \
+#define NET_PKT_DATA_ACCESS_CONTIGUOUS_DEFINE(_name, _type)	\
+	struct net_pkt_data_access _name = {			\
+		.data = NULL,					\
+		.size = sizeof(_type),				\
 	}
 
 #endif /* CONFIG_NET_HEADERS_ALWAYS_CONTIGUOUS */
