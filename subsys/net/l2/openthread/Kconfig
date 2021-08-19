@@ -252,6 +252,13 @@ config OPENTHREAD_PLATFORM_INFO
 	help
 	  Platform information for OpenThread
 
+config OPENTHREAD_XTAL_ACCURACY
+	int "Local clock Xtal accuracy in ppm"
+	default CLOCK_CONTROL_NRF_ACCURACY if CLOCK_CONTROL_NRF
+	default 0
+	help
+	  Local clock Xtal accuracy in ppm.
+
 config OPENTHREAD_CUSTOM_PARAMETERS
 	string "Custom Parameters to pass to OpenThread build system"
 	default ""

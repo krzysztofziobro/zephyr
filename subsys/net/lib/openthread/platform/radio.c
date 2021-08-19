@@ -1245,5 +1245,5 @@ otError otPlatRadioConfigureEnhAckProbing(otInstance *aInstance, otLinkMetrics a
 
 uint16_t otPlatTimeGetXtalAccuracy()
 {
-	return CONFIG_CLOCK_CONTROL_NRF_ACCURACY;
+	return CONFIG_OPENTHREAD_XTAL_ACCURACY;
 }
