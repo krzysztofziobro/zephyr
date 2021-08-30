@@ -586,16 +586,17 @@ static uint64_t nrf5_get_time(const struct device *dev)
 	ARG_UNUSED(dev);
 
 	static uint32_t prev_nrf802154_time = 0;
-	static uint64_t nrf802154_time_overflow = 0;
+	static uint32_t nrf802154_time_overflow_count = 0;
 	uint32_t nrf802154_time = nrf_802154_time_get();
        
 	if(prev_nrf802154_time > nrf802154_time)
 	{
-		nrf802154_time_overflow += UINT32_MAX;
+		nrf802154_time_overflow_count++;
 	}
+
 	prev_nrf802154_time = nrf802154_time;
  
-	return nrf802154_time_overflow + (uint64_t)nrf802154_time;	
+	return ((uint64_t)nrf802154_time_overflow_count << 32) + (uint64_t)nrf802154_time;
 }
 
 static uint8_t nrf5_get_acc(const struct device *dev)
