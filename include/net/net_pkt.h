@@ -268,6 +268,9 @@ struct net_pkt {
 		struct canbus_isotp_rx_ctx *canbus_rx_ctx;
 	};
 #endif
+
+	int64_t ieee802154_network_time_offset; /* Offset between local and network time for Time IE */
+
 	/* @endcond */
 };
 
@@ -1101,6 +1104,16 @@ static inline void net_pkt_set_ieee802154_ack_keyid(struct net_pkt *pkt,
 }
 #endif /* CONFIG_IEEE802154_2015 */
 #endif /* CONFIG_IEEE802154 || CONFIG_IEEE802154_RAW_MODE */
+
+static inline int64_t net_pkt_ieee802154_network_time_offset(struct net_pkt *pkt)
+{
+	return pkt->ieee802154_network_time_offset;
+}
+
+static inline void net_pkt_set_ieee802154_network_time_offset(struct net_pkt *pkt, int64_t network_time_offset)
+{
+	pkt->ieee802154_network_time_offset = network_time_offset;
+}
 
 #if defined(CONFIG_NET_IPV4_AUTO)
 static inline bool net_pkt_ipv4_auto(struct net_pkt *pkt)

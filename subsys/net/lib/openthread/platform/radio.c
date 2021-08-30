@@ -31,6 +31,7 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_OPENTHREAD_L2_LOG_LEVEL);
 #include <openthread-system.h>
 #include <openthread/instance.h>
 #include <openthread/platform/radio.h>
+#include <openthread/platform/time.h>
 #include <openthread/platform/diag.h>
 #include <openthread/message.h>
 
@@ -94,6 +95,10 @@ K_KERNEL_STACK_DEFINE(ot_task_stack,
 static struct k_work_q ot_work_q;
 static otError rx_result;
 static otError tx_result;
+
+#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
+static otRadioIeInfo tx_ie_info;
+#endif
 
 K_FIFO_DEFINE(rx_pkt_fifo);
 K_FIFO_DEFINE(tx_pkt_fifo);
@@ -220,6 +225,9 @@ static void dataInit(void)
 	net_pkt_append_buffer(tx_pkt, tx_payload);
 
 	sTransmitFrame.mPsdu = tx_payload->data;
+#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
+	sTransmitFrame.mInfo.mTxInfo.mIeInfo = &tx_ie_info;
+#endif
 }
 
 void platformRadioInit(void)
@@ -271,6 +279,13 @@ void transmit_message(struct k_work *tx_job)
 
 	radio_api->set_channel(radio_dev, sTransmitFrame.mChannel);
 	radio_api->set_txpower(radio_dev, tx_power);
+
+#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
+	if (sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeIeOffset != 0) {
+		*(sTransmitFrame.mPsdu + sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeIeOffset) = sTransmitFrame.mInfo.mTxInfo.mIeInfo->mTimeSyncSeq;
+		net_pkt_set_ieee802154_network_time_offset(tx_pkt, sTransmitFrame.mInfo.mTxInfo.mIeInfo->mNetworkTimeOffset);
+	}
+#endif
 
 	net_pkt_set_ieee802154_frame_secured(tx_pkt,
 					     sTransmitFrame.mInfo.mTxInfo.mIsSecurityProcessed);
@@ -690,6 +705,7 @@ int8_t otPlatRadioGetRssi(otInstance *aInstance)
 	int error = 0;
 	const uint16_t energy_detection_time = 1;
 	enum ieee802154_hw_caps radio_caps;
+
 	ARG_UNUSED(aInstance);
 
 	radio_caps = radio_api->get_capabilities(radio_dev);
@@ -723,6 +739,7 @@ otRadioCaps otPlatRadioGetCaps(otInstance *aInstance)
 	otRadioCaps caps = OT_RADIO_CAPS_NONE;
 
 	enum ieee802154_hw_caps radio_caps;
+
 	ARG_UNUSED(aInstance);
 	__ASSERT(radio_api,
 	    "platformRadioInit needs to be called prior to otPlatRadioGetCaps");
@@ -1074,6 +1091,7 @@ otError otPlatRadioEnableCsl(otInstance *aInstance, uint32_t aCslPeriod, otShort
 	/* Leave CSL Phase empty intentionally */
 	sys_put_le16(aCslPeriod, &ie_header[OT_IE_HEADER_SIZE + 2]);
 	config.ack_ie.data = ie_header;
+	config.ack_ie.data_len = OT_IE_HEADER_SIZE + OT_CSL_IE_SIZE;
 	config.ack_ie.short_addr = aShortAddr;
 	config.ack_ie.ext_addr = aExtAddr->m8;
 
@@ -1223,3 +1241,8 @@ otError otPlatRadioConfigureEnhAckProbing(otInstance *aInstance, otLinkMetrics a
 }
 
 #endif /* CONFIG_OPENTHREAD_LINK_METRICS_SUBJECT */
+
+uint16_t otPlatTimeGetXtalAccuracy()
+{
+	return CONFIG_OPENTHREAD_XTAL_ACCURACY;
+}

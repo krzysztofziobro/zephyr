@@ -499,6 +499,8 @@ static int nrf5_tx(const struct device *dev,
 	nrf5_radio->tx_psdu[0] = payload_len + NRF5_FCS_LENGTH;
 	memcpy(nrf5_radio->tx_psdu + 1, payload, payload_len);
 
+	nrf_802154_time_sync_network_offset_set(net_pkt_ieee802154_network_time_offset(pkt));
+
 	/* Reset semaphore in case ACK was received after timeout */
 	k_sem_reset(&nrf5_radio->tx_wait);
 
@@ -583,7 +585,18 @@ static uint64_t nrf5_get_time(const struct device *dev)
 {
 	ARG_UNUSED(dev);
 
-	return nrf_802154_time_get();
+	static uint32_t prev_nrf802154_time = 0;
+	static uint32_t nrf802154_time_overflow_count = 0;
+	uint32_t nrf802154_time = nrf_802154_time_get();
+       
+	if(prev_nrf802154_time > nrf802154_time)
+	{
+		nrf802154_time_overflow_count++;
+	}
+
+	prev_nrf802154_time = nrf802154_time;
+ 
+	return ((uint64_t)nrf802154_time_overflow_count << 32) + (uint64_t)nrf802154_time;
 }
 
 static uint8_t nrf5_get_acc(const struct device *dev)
