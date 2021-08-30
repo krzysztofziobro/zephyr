@@ -17,7 +17,6 @@
 LOG_MODULE_REGISTER(LOG_MODULE_NAME);
 
 #include <errno.h>
-#include <assert.h>
 
 #include <kernel.h>
 #include <arch/cpu.h>
@@ -500,10 +499,7 @@ static int nrf5_tx(const struct device *dev,
 	nrf5_radio->tx_psdu[0] = payload_len + NRF5_FCS_LENGTH;
 	memcpy(nrf5_radio->tx_psdu + 1, payload, payload_len);
 
-#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
-	nrf5_radio->tx_psdu_time_ie_offset = net_pkt_ieee802154_time_ie_offset(pkt);
-	nrf5_radio->tx_network_time_offset = net_pkt_ieee802154_network_time_offset(pkt);
-#endif
+	nrf_802154_time_sync_network_offset_set(net_pkt_ieee802154_network_time_offset(pkt));
 
 	/* Reset semaphore in case ACK was received after timeout */
 	k_sem_reset(&nrf5_radio->tx_wait);
@@ -589,7 +585,17 @@ static uint64_t nrf5_get_time(const struct device *dev)
 {
 	ARG_UNUSED(dev);
 
-	return nrf_802154_time_get();
+	static uint32_t prev_nrf802154_time = 0;
+	static uint64_t nrf802154_time_overflow = 0;
+	uint32_t nrf802154_time = nrf_802154_time_get();
+       
+	if(prev_nrf802154_time > nrf802154_time)
+	{
+		nrf802154_time_overflow += UINT32_MAX;
+	}
+	prev_nrf802154_time = nrf802154_time;
+ 
+	return nrf802154_time_overflow + (uint64_t)nrf802154_time;	
 }
 
 static uint8_t nrf5_get_acc(const struct device *dev)
@@ -658,28 +664,6 @@ static void nrf5_irq_config(const struct device *dev)
 	irq_enable(RADIO_IRQn);
 #endif
 }
-
-#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
-void nrf_802154_tx_started(const uint8_t *aFrame)
-{
-	assert(aFrame == nrf5_data.tx_psdu);
-
-	if (nrf5_data.tx_psdu_time_ie_offset != 0) {
-		uint8_t *timeIe = nrf5_data.tx_psdu + NRF5_PHR_LENGTH + nrf5_data.tx_psdu_time_ie_offset;
-		uint64_t time = (uint64_t)((int64_t)nrf5_get_time(NULL) + nrf5_data.tx_network_time_offset);
-
-		/* First byte of Time IE is skipped here because it corresponds
-		 * to a sequence number and has already been set.
-		 */
-
-		*(++timeIe) = (uint8_t)(time & 0xff);
-		for (uint8_t i = 1; i < sizeof(uint64_t); i++) {
-			time = time >> 8;
-			*(++timeIe) = (uint8_t)(time & 0xff);
-		}
-	}
-}
-#endif
 
 static int nrf5_init(const struct device *dev)
 {

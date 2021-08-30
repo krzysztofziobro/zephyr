@@ -92,14 +92,6 @@ struct nrf5_802154_data {
 
 	/* Indicates if currently processed TX frame has dynamic data updated. */
 	bool tx_frame_mac_hdr_rdy;
-
-#if defined(CONFIG_OPENTHREAD_TIME_SYNC)
-	/* Time Sync IE offset */
-	uint8_t tx_psdu_time_ie_offset;
-
-	/* Offset between local and network time for OT Time Sync */
-	int64_t tx_network_time_offset;
-#endif
 };
 
 #endif /* ZEPHYR_DRIVERS_IEEE802154_IEEE802154_NRF5_H_ */
